@@ -13,7 +13,7 @@ Conference on Learning Representations (ICLR), Vancouver, Canada, April 30 – M
 https://openreview.net/forum?id=BkrsAzWAb
 
 ```
-@inproceedings{baydin-2018-hypergradient,
+@inproceedings{baydin2018hypergradient,
   title = {Online Learning Rate Adaptation with Hypergradient Descent},
   author = {Baydin, Atılım Güneş and Cornish, Robert and Rubio, David Martínez and Schmidt, Mark and Wood, Frank},
   booktitle = {Sixth International Conference on Learning Representations (ICLR), Vancouver, Canada, April 30 -- May 3, 2018},

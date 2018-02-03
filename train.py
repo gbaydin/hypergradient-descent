@@ -10,8 +10,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 from torchvision import datasets, transforms
+import vgg
 from torch.utils.data import DataLoader
-from torch.optim import Adam
+from torch.optim import SGD, Adam
+from sgd_hd import SGDHD
 from adam_hd import AdamHD
 
 
@@ -100,10 +102,18 @@ def train(opt, log_func=None):
     else:
         raise Exception('Unknown model: {}'.format(opt.model))
 
-    if opt.method == 'adam':
+    if opt.method == 'sgd':
+        optimizer = SGD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay)
+    elif opt.method == 'sgd_hd':
+        optimizer = SGDHD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
+    elif opt.method == 'sgdn':
+        optimizer = SGD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu)
+    elif opt.method == 'sgdn_hd':
+        optimizer = SGDHD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, hypergrad_lr=opt.beta)
+    elif opt.method == 'adam':
         optimizer = Adam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay)
     elif opt.method == 'adam_hd':
-        optimizer = AdamHD(model.parameters(), lr=opt.alpha_0, hypergrad_lr=opt.beta, weight_decay=opt.weightDecay)
+        optimizer = AdamHD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
     else:
         raise Exception('Unknown method: {}'.format(opt.method))
 
@@ -197,7 +207,7 @@ def main():
         parser.add_argument('--seed', help='random seed', default=123, type=int)
         parser.add_argument('--dir', help='directory to write the output files', default='results', type=str)
         parser.add_argument('--model', help='model (logreg, mlp, vgg)', default='logreg', type=str)
-        parser.add_argument('--method', help='method (adam, adam_hd)', default='adam', type=str)
+        parser.add_argument('--method', help='method (sgd, sgd_hd, sgdn, sgdn_hd, adam, adam_hd)', default='adam', type=str)
         parser.add_argument('--alpha_0', help='initial learning rate', default=0.001, type=float)
         parser.add_argument('--beta', help='learning learning rate', default=0.000001, type=float)
         parser.add_argument('--mu', help='momentum', default=0.9, type=float)
@@ -208,6 +218,7 @@ def main():
         parser.add_argument('--lossThreshold', help='stop after reaching this loss (0: disregard)', default=0, type=float)
         parser.add_argument('--silent', help='do not print output', action='store_true')
         parser.add_argument('--workers', help='number of data loading workers', default=4, type=int)
+        parser.add_argument('--parallel', help='parallelize', action='store_true')
         parser.add_argument('--save', help='do not save output to file', action='store_true')
         opt = parser.parse_args()
 
