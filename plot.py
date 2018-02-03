@@ -4,6 +4,9 @@ import argparse
 import csv
 import os
 import glob
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from mpl_toolkits.axes_grid.inset_locator import inset_axes
