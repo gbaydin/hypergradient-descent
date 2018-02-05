@@ -27,7 +27,7 @@ Don't be worried that, instead of having to tune just one learning rate (`lr`), 
 ## What is the advantage?
 Hypergradient algorithms are much less sensitive to the choice of the initial learning rate (`lr`), unlike the non-hypergradient version of the same algorithm. The hypergradient version of an optimization algorithm requires significantly less tuning to give performance better than, or in the worst case the same as, the non-hypergradient baseline, given a small `hypergrad_lr`, which can either be left as the recommended default, or tuned. Please see the paper for guideline values of `hypergrad_lr`.
 
-In practice, you might be surprised to see that **even starting with a zero learning rate works** and the learning rate is quickly adjusted to a useful non-zero level as needed:
+In practice, you might be surprised to see that **even starting with a zero learning rate works** and the learning rate is quickly raised to a useful non-zero level as needed, and then decayed towards zero as optimization converges:
 ```
 optimizer = optim.AdamHD(model.parameters(), lr=0, hypergrad_lr=1e-8)
 ```
