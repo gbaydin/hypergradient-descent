@@ -3,7 +3,7 @@ This is the [PyTorch](http://pytorch.org/) code for the paper: [_Online Learning
 
 A [TensorFlow](https://www.tensorflow.org/) version is also planned and should appear in this repo at a later time.
 
-## What are "hypergradients"?
+## What is a "hypergradient"?
 
 In gradient-based optimization, one optimizes an objective function by using its derivatives (gradient) with respect to model parameters. In addition to this basic gradient, a "hypergradient" is the derivative of the objective function with respect to the optimization procedure's hyperparameters (such as the learning rate). There can be many types of hypergradients, and in this work we're interested in the hypergradient with respect to a scalar learning rate.
 
