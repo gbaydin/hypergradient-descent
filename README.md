@@ -22,7 +22,9 @@ optimizer = optim.AdamHD(model.parameters(), lr=args.lr, hypergrad_lr=1e-8)
 
 The optimizers introduce an extra argument `hypergrad_lr` which determines the hypergradient learning rate, that is, the learning rate used to optimize the regular learning rate `lr`. The value you give to `lr` sets the initial value of the regular learning rate, from which it will be adapted in an online way by the hypergradient descent procedure. Lower values for `hypergrad_lr` are safer, in the sense that one recovers the non-hypergradient version of the optimization algorithm as `hypergrad_lr` approaches zero.
 
-Don't be worried that, instead of tuning just one learning rate (`lr`), now you have to tune two (`lr` and `hypergrad_lr`). Hypergradient algorithms are much less sensitive to the choice of the initial learning rate, unlike the non-hypergradient version of the same algorithm. In practice, you might be surprised to see that even starting with a zero learning rate works and the learning rate is quickly adjusted to a useful non-zero level as needed:
+Don't be worried that, instead of having to tune just one learning rate (`lr`), now you have to tune two (`lr` and `hypergrad_lr`). Hypergradient algorithms are much less sensitive to the choice of the initial learning rate, unlike the non-hypergradient version of the same algorithm. The hypergradient of an optimization algorithm requires significantly less tuning to give performance better than, or in the worst case the same as, the non-hypergradient baseline, given a small `hypergrad_lr` (which can be left as the recommended value, or tuned), Please see the paper for guideline values of `hypergrad_lr`.
+
+In practice, you might be surprised to see that **even starting with a zero learning rate works** and the learning rate is quickly adjusted to a useful non-zero level as needed:
 ```
 optimizer = optim.AdamHD(model.parameters(), lr=0, hypergrad_lr=1e-8)
 ```
