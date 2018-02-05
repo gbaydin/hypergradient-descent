@@ -3,8 +3,18 @@ This is the [PyTorch](http://pytorch.org/) code for the paper: [_Online Learning
 
 A [TensorFlow](https://www.tensorflow.org/) version is also planned and should appear in this repo at a later time.
 
-## How to run
-Coming soon.
+## What are "hypergradients"?
+
+In gradient-based optimization, one optimizes an objective function by using its derivatives (gradient) with respect to model parameters. In addition to this basic gradient, a "hypergradient" is the derivative of the objective function with respect to the optimization procedure's hyperparameters (such as the learning rate). There can be many types of hypergradients, and in this work we're interested in the hypergradient with respect to a scalar learning rate.
+
+## How can I use it for my work?
+
+We are providing ready-to-use implementations of the hypergradient versions of SGD (with or without momentum) and Adam optimizers for PyTorch. These comply with the `torch.optim` API and can be used as drop-in replacements in your regular setup. Just take the `sgd_hd.py` and `adam_hd.py` files from this repo and import them like
+
+```
+from sgd_hd import SGDHD
+from adam_hd import AdamHD
+```
 
 ## Paper
 Atılım Güneş Baydin, Robert Cornish, David Martı́nez Rubio, Mark Schmidt, and Frank Wood. Online learning rate adaptation with hypergradient descent. In _Sixth International
