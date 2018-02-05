@@ -65,17 +65,7 @@ class SGDHD(Optimizer):
             raise ValueError("SGDHD doesn't support per-parameter options (parameter groups)")
 
         self._params = self.param_groups[0]['params']
-        self._numel_cache = None
-
-    def __setstate__(self, state):
-        super(SGDHD, self).__setstate__(state)
-        for group in self.param_groups:
-            group.setdefault('nesterov', False)
-
-    def _numel(self):
-        if self._numel_cache is None:
-            self._numel_cache = reduce(lambda total, p: total + p.numel(), self._params, 0)
-        return self._numel_cache
+        self._params_numel = reduce(lambda total, p: total + p.numel(), self._params, 0)
 
     def _gather_flat_grad_with_weight_decay(self, weight_decay=0):
         views = []
@@ -98,7 +88,7 @@ class SGDHD(Optimizer):
             # view as to avoid deprecated pointwise semantics
             p.data.add_(step_size, update[offset:offset + numel].view_as(p.data))
             offset += numel
-        assert offset == self._numel()
+        assert offset == self._params_numel
 
     def step(self, closure=None):
         """Performs a single optimization step.
