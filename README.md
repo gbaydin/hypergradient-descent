@@ -5,7 +5,7 @@ A [TensorFlow](https://www.tensorflow.org/) version is also planned and should a
 
 ## What is a "hypergradient"?
 
-In gradient-based optimization, one optimizes an objective function by using its derivatives (gradient) with respect to model parameters. In addition to this basic gradient, a "hypergradient" is the derivative of the same objective function with respect to the optimization procedure's hyperparameters (such as the learning rate). There can be many types of hypergradients, and in this work we're interested in the hypergradient with respect to a scalar learning rate.
+In gradient-based optimization, one optimizes an objective function by using its derivatives (gradient) with respect to model parameters. In addition to this basic gradient, a _hypergradient_ is the derivative of the same objective function with respect to the optimization procedure's hyperparameters (such as the learning rate). There can be many types of hypergradients, and in this work we're interested in the hypergradient with respect to a scalar learning rate.
 
 ## How can I use it for my work?
 
@@ -25,7 +25,7 @@ The optimizers introduce an extra argument `hypergrad_lr` which determines the h
 Don't be worried that, instead of having to tune just one learning rate (`lr`), now you have to tune two (`lr` and `hypergrad_lr`); just see the next section.
 
 ## What is the advantage?
-Hypergradient algorithms are much less sensitive to the choice of the initial learning rate (`lr`), unlike the non-hypergradient version of the same algorithm. The hypergradient version of an optimization algorithm requires significantly less tuning to give performance better than, or in the worst case the same as, the non-hypergradient baseline, given a small `hypergrad_lr` (which can either be left as the recommended default, or tuned), Please see the paper for guideline values of `hypergrad_lr`.
+Hypergradient algorithms are much less sensitive to the choice of the initial learning rate (`lr`), unlike the non-hypergradient version of the same algorithm. The hypergradient version of an optimization algorithm requires significantly less tuning to give performance better than, or in the worst case the same as, the non-hypergradient baseline, given a small `hypergrad_lr`, which can either be left as the recommended default, or tuned. Please see the paper for guideline values of `hypergrad_lr`.
 
 In practice, you might be surprised to see that **even starting with a zero learning rate works** and the learning rate is quickly adjusted to a useful non-zero level as needed:
 ```
