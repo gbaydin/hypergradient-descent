@@ -1,4 +1,5 @@
 import torch
+from functools import reduce
 from torch.optim.optimizer import Optimizer, required
 
 
@@ -60,10 +61,44 @@ class SGDHD(Optimizer):
             raise ValueError("Nesterov momentum requires a momentum and zero dampening")
         super(SGDHD, self).__init__(params, defaults)
 
+        if len(self.param_groups) != 1:
+            raise ValueError("SGDHD doesn't support per-parameter options (parameter groups)")
+
+        self._params = self.param_groups[0]['params']
+        self._numel_cache = None
+
     def __setstate__(self, state):
         super(SGDHD, self).__setstate__(state)
         for group in self.param_groups:
             group.setdefault('nesterov', False)
+
+    def _numel(self):
+        if self._numel_cache is None:
+            self._numel_cache = reduce(lambda total, p: total + p.numel(), self._params, 0)
+        return self._numel_cache
+
+    def _gather_flat_grad_with_weight_decay(self, weight_decay=0):
+        views = []
+        for p in self._params:
+            if p.grad is None:
+                view = torch.zeros_like(p.data)
+            elif p.grad.data.is_sparse:
+                view = p.grad.data.to_dense().view(-1)
+            else:
+                view = p.grad.data.view(-1)
+            if weight_decay != 0:
+                view.add_(weight_decay, p.data.view(-1))
+            views.append(view)
+        return torch.cat(views, 0)
+
+    def _add_grad(self, step_size, update):
+        offset = 0
+        for p in self._params:
+            numel = p.numel()
+            # view as to avoid deprecated pointwise semantics
+            p.data.add_(step_size, update[offset:offset + numel].view_as(p.data))
+            offset += numel
+        assert offset == self._numel()
 
     def step(self, closure=None):
         """Performs a single optimization step.
@@ -72,48 +107,48 @@ class SGDHD(Optimizer):
             closure (callable, optional): A closure that reevaluates the model
                 and returns the loss.
         """
+        assert len(self.param_groups) == 1
+
         loss = None
         if closure is not None:
             loss = closure()
 
-        for group in self.param_groups:
-            weight_decay = group['weight_decay']
-            momentum = group['momentum']
-            dampening = group['dampening']
-            nesterov = group['nesterov']
+        group = self.param_groups[0]
+        weight_decay = group['weight_decay']
+        momentum = group['momentum']
+        dampening = group['dampening']
+        nesterov = group['nesterov']
 
-            for p in group['params']:
-                if p.grad is None:
-                    continue
-                d_p = p.grad.data
-                if weight_decay != 0:
-                    d_p.add_(weight_decay, p.data)
+        grad = self._gather_flat_grad_with_weight_decay(weight_decay)
 
-                param_state = self.state[p]
+        # NOTE: SGDHD has only global state, but we register it as state for
+        # the first param, because this helps with casting in load_state_dict
+        state = self.state[self._params[0]]
+        # State initialization
+        if len(state) == 0:
+            state['grad_prev'] = torch.zeros_like(grad)
 
-                # State initialization
-                if len(param_state) == 0:
-                    param_state['d_p_prev'] = torch.zeros_like(p.data)
+        if momentum != 0:
+            print('applying momentum')
+            if 'momentum_buffer' not in state:
+                buf = state['momentum_buffer'] = torch.zeros_like(grad)
+                buf.mul_(momentum).add_(grad)
+            else:
+                buf = state['momentum_buffer']
+                buf.mul_(momentum).add_(1 - dampening, grad)
+            if nesterov:
+                grad.add_(momentum, buf)
+            else:
+                grad = buf
 
-                if momentum != 0:
-                    if 'momentum_buffer' not in param_state:
-                        buf = param_state['momentum_buffer'] = torch.zeros_like(p.data)
-                        buf.mul_(momentum).add_(d_p)
-                    else:
-                        buf = param_state['momentum_buffer']
-                        buf.mul_(momentum).add_(1 - dampening, d_p)
-                    if nesterov:
-                        d_p = d_p.add(momentum, buf)
-                    else:
-                        d_p = buf
+        grad_prev = state['grad_prev']
+        # Hypergradient for SGD
+        print(self._numel())
+        h = torch.dot(grad, grad_prev) / self._numel()
+        # Hypergradient descent of the learning rate:
+        group['lr'] += group['hypergrad_lr'] * h
+        state['grad_prev'] = grad
 
-                d_p_prev = param_state['d_p_prev']
-                # Hypergradient for SGD
-                h = torch.dot(d_p.view(-1), d_p_prev.view(-1))
-                # Hypergradient descent of the learning rate:
-                group['lr'] += group['hypergrad_lr'] * h
-                param_state['d_p_prev'] = d_p
-
-                p.data.add_(-group['lr'], d_p)
+        self._add_grad(-group['lr'], grad)
 
         return loss
