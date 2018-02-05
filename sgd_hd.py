@@ -143,8 +143,7 @@ class SGDHD(Optimizer):
 
         grad_prev = state['grad_prev']
         # Hypergradient for SGD
-        print(self._numel())
-        h = torch.dot(grad, grad_prev) / self._numel()
+        h = torch.dot(grad, grad_prev)
         # Hypergradient descent of the learning rate:
         group['lr'] += group['hypergrad_lr'] * h
         state['grad_prev'] = grad
