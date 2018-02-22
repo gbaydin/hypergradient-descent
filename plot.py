@@ -37,7 +37,7 @@ for model in next(os.walk(opt.dir))[1]:
     for fname in glob.glob('{}/{}/**/*.csv'.format(opt.dir, model), recursive=True):
         name = os.path.splitext(os.path.basename(fname))[0]
         data[name] = pd.read_csv(fname)
-        data_epoch[name] = data[name][np.isfinite(data[name].LossEpoch)]
+        data_epoch[name] = data[name][pd.notna(data[name].LossEpoch)]
         selected.append(name)
 
     plt.figure(figsize=(5,12))
