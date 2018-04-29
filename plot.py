@@ -28,8 +28,12 @@ linedashes = {'sgd':[3,3],'sgdn':[3,3],'adam':[3,3],'sgd_hd':[10,1e-9],'sgdn_hd'
 
 parser = argparse.ArgumentParser(description='Plotting for hypergradient descent PyTorch tests', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--dir', help='directory to read the csv files written by train.py', default='results', type=str)
+parser.add_argument('--plotDir', help='directory to save the plots', default='plots', type=str)
 opt = parser.parse_args()
 
+os.makedirs(opt.plotDir, exist_ok=True)
+
+model_titles = {'logreg': 'Logistic regression (on MNIST)', 'mlp': 'Multi-layer neural network (on MNIST)', 'vgg': 'VGG Net (on CIFAR-10)'}
 for model in next(os.walk(opt.dir))[1]:
     data = {}
     data_epoch = {}
@@ -50,6 +54,7 @@ for model in next(os.walk(opt.dir))[1]:
     plt.ylabel('Learning rate')
     plt.tick_params(labeltop=False, labelbottom=False, bottom=False, top=False, labelright=False)
     plt.grid()
+    plt.title(model_titles[model])
     inset_axes(ax, width="50%", height="35%", loc=1)
     for name in selected:
         plt.plot(data[name].Iteration, data[name].Alpha,label=names[name],color=colors[name],linestyle=linestyles[name],dashes=linedashes[name])
@@ -91,4 +96,4 @@ for model in next(os.walk(opt.dir))[1]:
     plt.grid()
 
     plt.tight_layout()
-    plt.savefig('{}.pdf'.format(model), bbox_inches='tight')
+    plt.savefig('{}/{}.pdf'.format(opt.plotDir, model), bbox_inches='tight')

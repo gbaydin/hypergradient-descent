@@ -22,10 +22,12 @@ class LogReg(nn.Module):
         super(LogReg, self).__init__()
         self._input_dim = input_dim
         self.lin1 = nn.Linear(input_dim, output_dim)
+
     def forward(self, x):
         x = x.view(-1, self._input_dim)
         x = self.lin1(x)
         return x
+
 
 class MLP(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim):
@@ -34,6 +36,7 @@ class MLP(nn.Module):
         self.lin1 = nn.Linear(input_dim, hidden_dim)
         self.lin2 = nn.Linear(hidden_dim, hidden_dim)
         self.lin3 = nn.Linear(hidden_dim, output_dim)
+
     def forward(self, x):
         x = x.view(-1, self._input_dim)
         x = F.relu(self.lin1(x))
@@ -54,7 +57,7 @@ def train(opt, log_func=None):
     elif opt.model == 'mlp':
         model = MLP(28 * 28, 1000, 10)
     elif opt.model == 'vgg':
-        model = vgg.vgg16()
+        model = vgg.vgg16_bn()
         if opt.parallel:
             model.features = torch.nn.DataParallel(model.features)
     else:
@@ -77,7 +80,7 @@ def train(opt, log_func=None):
                                transforms.ToTensor(),
                                transforms.Normalize((0.1307,), (0.3081,))
                            ])),
-            batch_size=opt.batchSize, shuffle=True)
+            batch_size=opt.batchSize, shuffle=False)
     elif opt.model == 'vgg':
         task = 'CIFAR10'
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -204,7 +207,7 @@ def main():
         parser = argparse.ArgumentParser(description='Hypergradient descent PyTorch tests', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
         parser.add_argument('--cuda', help='use CUDA', action='store_true')
         parser.add_argument('--device', help='selected CUDA device', default=0, type=int)
-        parser.add_argument('--seed', help='random seed', default=123, type=int)
+        parser.add_argument('--seed', help='random seed', default=1, type=int)
         parser.add_argument('--dir', help='directory to write the output files', default='results', type=str)
         parser.add_argument('--model', help='model (logreg, mlp, vgg)', default='logreg', type=str)
         parser.add_argument('--method', help='method (sgd, sgd_hd, sgdn, sgdn_hd, adam, adam_hd)', default='adam', type=str)
@@ -238,7 +241,7 @@ def main():
         if not opt.save:
             def log_func(epoch, iteration, time_spent, loss, loss_epoch, valid_loss, alpha, alpha_epoch, beta):
                 if not opt.silent:
-                    print('{} | {} | Ep: {} | Iter: {} | Time: {:+.3e} | Loss: {:+.3e} | Valid. loss: {:+.3e} | Alpha: {:+.3e} | Beta: {:+.3e}'.format(opt.model, opt.method, epoch, iteration, time_spent, loss, valid_loss, alpha, beta))
+                    print('{} | {} | Epoch: {} | Iter: {} | Time: {:+.3e} | Loss: {:+.3e} | Valid. loss: {:+.3e} | Alpha: {:+.3e} | Beta: {:+.3e}'.format(opt.model, opt.method, epoch, iteration, time_spent, loss, valid_loss, alpha, beta))
             train(opt, log_func)
         else:
             with open(file_name, 'w') as f:
@@ -247,7 +250,7 @@ def main():
                 def log_func(epoch, iteration, time_spent, loss, loss_epoch, valid_loss, alpha, alpha_epoch, beta):
                     writer.writerow([epoch, iteration, time_spent, loss, loss_epoch, valid_loss, alpha, alpha_epoch, beta])
                     if not opt.silent:
-                        print('{} | {} | Ep: {} | Iter: {} | Time: {:+.3e} | Loss: {:+.3e} | Valid. loss: {:+.3e} | Alpha: {:+.3e} | Beta: {:+.3e}'.format(opt.model, opt.method, epoch, iteration, time_spent, loss, valid_loss, alpha, beta))
+                        print('{} | {} | Epoch: {} | Iter: {} | Time: {:+.3e} | Loss: {:+.3e} | Valid. loss: {:+.3e} | Alpha: {:+.3e} | Beta: {:+.3e}'.format(opt.model, opt.method, epoch, iteration, time_spent, loss, valid_loss, alpha, beta))
                 train(opt, log_func)
 
     except KeyboardInterrupt:
@@ -255,6 +258,7 @@ def main():
     except Exception:
         traceback.print_exc(file=sys.stdout)
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
