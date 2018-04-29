@@ -1,5 +1,5 @@
 # hypergradient-descent
-This is the [PyTorch](http://pytorch.org/) code for the paper [_Online Learning Rate Adaptation with Hypergradient Descent_](https://openreview.net/forum?id=BkrsAzWAb) at ICLR 2017.
+This is the [PyTorch](http://pytorch.org/) code for the paper [_Online Learning Rate Adaptation with Hypergradient Descent_](https://openreview.net/forum?id=BkrsAzWAb) at ICLR 2018.
 
 A [TensorFlow](https://www.tensorflow.org/) version is also planned and should appear in this repo at a later time.
 
