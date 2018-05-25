@@ -65,3 +65,10 @@ https://openreview.net/forum?id=BkrsAzWAb
   year = {2018}
 }
 ```
+
+## Poster
+
+[The ICLR 2018 poster](https://github.com/gbaydin/hypergradient-descent/raw/master/poster/iclr_2018_poster.pdf)
+
+<img src="poster/iclr_2018_poster.png" width="800px"/>
+
