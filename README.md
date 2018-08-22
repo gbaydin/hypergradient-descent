@@ -50,6 +50,7 @@ print(lr)
 
 * A (Lua)Torch optim implementation (not the main implementation for the paper and not well-tested): https://github.com/gbaydin/optim
 * An implementation of Adam-HD in C++ in the Livermore Big Artificial Neural Network Toolkit, Lawrence Livermore National Laboratory: https://github.com/LLNL/lbann/blob/a778d2b764ba209042555aac26328cbfb8063802/src/optimizers/hypergradient_adam.cpp
+* A TensorFlow implementation by Andrii Zadaianchuk, University of Tübingen: https://github.com/zadaianchuk/HyperGradientDescent
 
 ## Paper
 Atılım Güneş Baydin, Robert Cornish, David Martı́nez Rubio, Mark Schmidt, and Frank Wood. Online learning rate adaptation with hypergradient descent. In _Sixth International
