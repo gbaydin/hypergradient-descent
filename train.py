@@ -13,8 +13,7 @@ from torchvision import datasets, transforms
 import vgg
 from torch.utils.data import DataLoader
 from torch.optim import SGD, Adam
-from sgd_hd import SGDHD
-from adam_hd import AdamHD
+from hypergrad import SGDHD, AdamHD
 
 
 class LogReg(nn.Module):

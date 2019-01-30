@@ -9,13 +9,18 @@ A [TensorFlow](https://www.tensorflow.org/) version is also planned and should a
 
 In gradient-based optimization, one optimizes an objective function by using its derivatives (gradient) with respect to model parameters. In addition to this basic gradient, a _hypergradient_ is the derivative of the same objective function with respect to the optimization procedure's hyperparameters (such as the learning rate, momentum, or regularization parameters). There can be many types of hypergradients, and in this work we're interested in the hypergradient with respect to a scalar learning rate.
 
+## Installation
+
+```bash
+pip install git+https://github.com/gbaydin/hypergradient-descent.git
+```
+
 ## How can I use it for my work?
 
 We are providing ready-to-use implementations of the hypergradient versions of SGD (with or without momentum) and Adam optimizers for PyTorch. These comply with the `torch.optim` API and can be used as drop-in replacements in your code. Just take the `sgd_hd.py` and `adam_hd.py` files from this repo and import them like
 
-```
-from sgd_hd import SGDHD
-from adam_hd import AdamHD
+```python
+from hypergrad import SGDHD, AdamHD
 ...
 
 optimizer = optim.AdamHD(model.parameters(), lr=args.lr, hypergrad_lr=1e-8)
@@ -30,13 +35,13 @@ Don't be worried that, instead of having to tune just one learning rate (`lr`), 
 Hypergradient algorithms are much less sensitive to the choice of the initial learning rate (`lr`), unlike the non-hypergradient version of the same algorithm. A hypergradient algorithm requires significantly less tuning to give performance better than, or in the worst case the same as, a non-hypergradient baseline, given a small `hypergrad_lr`, which can either be left as the recommended default or tuned. Please see the paper for guideline values of `hypergrad_lr`.
 
 In practice, you might be surprised to see that **even starting with a zero learning rate works** and the learning rate is quickly raised to a useful non-zero level as needed, and then decayed towards zero as optimization converges:
-```
+```python
 optimizer = optim.AdamHD(model.parameters(), lr=0, hypergrad_lr=1e-8)
 ```
 
 If you would like to monitor the evolution of the learning rate during optimization, you can monitor it with code that looks like
 
-```
+```python
 lr = optimizer.param_groups[0]['lr']
 print(lr)
 ```
