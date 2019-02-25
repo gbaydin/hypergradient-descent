@@ -51,12 +51,12 @@ print(lr)
 * In the .csv result files, `nan` is used as a placeholder for empty entries in epoch losses, which are only computed once per epoch.
 * The implementation in this repository doesn't include any heuristics to ensure that your gradients and hypergradients don't "explode". In practice, you might need to apply gradient clipping or safeguards for the updates to the learning rate to prevent bad behavior. If this happens in your models, we would be interested in hearing about it: please let us know via email or a GitHub issue.
 
-## Other implementations
+## Some other implementations
 
-* A (Lua)Torch optim implementation (not the main implementation for the paper and not well-tested): https://github.com/gbaydin/optim
-* An implementation of Adam-HD in C++ in the Livermore Big Artificial Neural Network Toolkit, Lawrence Livermore National Laboratory: https://github.com/LLNL/lbann/blob/a778d2b764ba209042555aac26328cbfb8063802/src/optimizers/hypergradient_adam.cpp
-* A TensorFlow implementation by Andrii Zadaianchuk, University of Tübingen: https://github.com/zadaianchuk/HyperGradientDescent
-
+* (Lua)Torch optim implementation (not the main implementation for the paper and not well-tested): https://github.com/gbaydin/optim
+* Implementation of Adam-HD in C++ in the Livermore Big Artificial Neural Network Toolkit, Lawrence Livermore National Laboratory: https://github.com/LLNL/lbann/blob/a778d2b764ba209042555aac26328cbfb8063802/src/optimizers/hypergradient_adam.cpp
+* TensorFlow implementation by Andrii Zadaianchuk, University of Tübingen: https://github.com/zadaianchuk/HyperGradientDescent
+* Java implementation in Apache Hivemall: https://github.com/apache/incubator-hivemall/blob/31932fd7c63f9bb21eba8959944d03f280b6deb9/core/src/main/java/hivemall/optimizer/Optimizer.java#L640
 ## Paper
 Atılım Güneş Baydin, Robert Cornish, David Martı́nez Rubio, Mark Schmidt, and Frank Wood. Online learning rate adaptation with hypergradient descent. In _Sixth International
 Conference on Learning Representations (ICLR), Vancouver, Canada, April 30 – May 3, 2018,_ 2018.
