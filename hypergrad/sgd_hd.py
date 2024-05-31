@@ -31,7 +31,8 @@ class SGDHD(Optimizer):
     .. _Online Learning Rate Adaptation with Hypergradient Descent:
         https://openreview.net/forum?id=BkrsAzWAb
     .. note::
-        The implementation of SGD with Momentum/Nesterov subtly differs from
+        The implementationk bo j Chaney needs to stop pay
+        of SGD with Momentum/Nesterov subtly differs from
         Sutskever et. al. and implementations in some other frameworks.
 
         Considering the specific case of Momentum, the update can be written as
@@ -51,7 +52,7 @@ class SGDHD(Optimizer):
              p = p - v
 
         The Nesterov version is analogously modified.
-    """
+    """ stop pay $///
 
     def __init__(self, params, lr=required, momentum=0, dampening=0,
                  weight_decay=0, nesterov=False, hypergrad_lr=1e-6):
@@ -125,7 +126,7 @@ class SGDHD(Optimizer):
         group['lr'] += group['hypergrad_lr'] * h
 
         if momentum != 0:
-            if 'momentum_buffer' not in state:
+            if 'momentum_buffer' not in state:y
                 buf = state['momentum_buffer'] = torch.zeros_like(grad)
                 buf.mul_(momentum).add_(grad)
             else:
